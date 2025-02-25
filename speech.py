@@ -3,7 +3,7 @@ import os
 
 app = Flask(__name__)
 
-# Paths for ASL and ISL image folders (static folder is handled by Flask automatically)
+# Paths for ASL and ISL image folders 
 ASL_PATH = "static\ASL"
 ISL_PATH = "static\ISL"
 
