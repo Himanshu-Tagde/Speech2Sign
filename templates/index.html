@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Language Translator</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h1 {
+            color: #007BFF;
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+
+        .language-selection {
+            margin: 20px 0;
+        }
+
+        label {
+            font-size: 18px;
+            color: #555;
+        }
+
+        select, input[type="text"], input[type="button"] {
+            padding: 12px;
+            margin: 10px 0;
+            font-size: 16px;
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        select:focus, input[type="text"]:focus, input[type="button"]:focus {
+            border-color: #007BFF;
+        }
+
+        input[type="button"] {
+            cursor: pointer;
+            background-color: #007BFF;
+            color: white;
+            font-weight: bold;
+            border: none;
+        }
+
+        input[type="button"]:hover {
+            background-color: #0056b3;
+        }
+
+        input[type="submit"] {
+            padding: 12px 20px;
+            font-size: 18px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #218838;
+        }
+
+        #speech-text {
+            margin-top: 15px;
+            font-size: 18px;
+            color: #555;
+            font-weight: bold;
+        }
+
+        .sign-images {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .sign-images img {
+            width: 120px;
+            height: 120px;
+            margin: 10px;
+            border-radius: 8px;
+            transition: transform 0.3s;
+        }
+
+        .sign-images img:hover {
+            transform: scale(1.1);
+        }
+
+        .footer {
+            margin-top: 50px;
+            font-size: 14px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Sign Language Translator</h1>
+
+    <!-- Form for text input and language selection -->
+    <form method="POST" action="/translate">
+        <div class="language-selection">
+            <label for="language">Choose Language:</label>
+            <select name="language" id="language">
+                <option value="ASL">American Sign Language (ASL)</option>
+                <option value="ISL">Indian Sign Language (ISL)</option>
+            </select>
+        </div>
+
+        <div>
+            <label for="text_input">Enter Text:</label>
+            <input type="text" name="text_input" id="text_input" placeholder="Enter only letters or words">
+        </div>
+
+        <div>
+            <label for="speech_input">Or use speech input:</label>
+            <input type="button" value="Start Speech Recognition" onclick="startSpeechRecognition()">
+            <input type="hidden" id="speech_input" name="speech_input" value="">
+        </div>
+
+        <div>
+            <input type="submit" value="Translate">
+        </div>
+    </form>
+
+    <!-- Display the recognized speech -->
+    <div id="speech-text"></div>
+
+    {% if input_text %}
+        <h2>Input Text: {{ input_text }}</h2>
+        <p>Translated to {{ language }}:</p>
+        <div class="sign-images">
+            {% for image in images %}
+                <img src="{{ image }}" alt="Sign Image">
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
+
+<div class="footer">
+    <p>&copy; 2025 Sign Language Translator. All rights reserved.</p>
+</div>
+
+<script>
+    // Speech Recognition
+    function startSpeechRecognition() {
+        const speechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!speechRecognition) {
+            alert("Speech recognition not supported in this browser.");
+            return;
+        }
+
+        const recognition = new speechRecognition();
+        recognition.lang = 'en-US';
+
+        recognition.onstart = function() {
+            console.log("Speech recognition started.");
+        };
+
+        recognition.onresult = function(event) {
+            const transcript = event.results[0][0].transcript;
+            document.getElementById("speech_input").value = transcript; // Set the value for hidden input
+            document.getElementById("speech-text").textContent = "You said: " + transcript; // Display transcribed text
+            console.log("Speech Input: " + transcript);
+        };
+
+        recognition.onerror = function(event) {
+            console.log("Speech recognition error: " + event.error);
+        };
+
+        recognition.start();
+    }
+</script>
+
+</body>
+</html>
